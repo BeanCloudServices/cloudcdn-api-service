@@ -14,6 +14,7 @@ env=dev
 gh_pat_path="$HOME/.beancloud/.gh_pat"
 organisation=BeanCloudServices
 contract_repo=cloud-contracts
+app_dir=cdn-api-app
 
 set -u
 
@@ -170,17 +171,22 @@ rm -f -r $_contract_dir
 
 unpack_contract() {
     echo "Unpacking ... [$env-$entity_name]"
-    local _dir_entity="$entity_name"
+    local _dir_entity="../../../$app_dir/$entity_name-openapi"
+    rm -f -r $_dir_entity
 	cp -R ./bin/resources/openapi/custom_templates/* ./bin/resources/openapi/rust-server/
 
     cd ./contracts/$bounded_context/openapi
 	java -jar ../../../bin/resources/openapi-generator-cli.jar generate -i ./$entity_name.yaml -o $_dir_entity --package-name=beancloud_${bounded_context}_openapi_$entity_name -g rust-server -t ../../../bin/resources/openapi/rust-server -c ../../../bin/resources/openapi/config.yaml --type-mappings=date=NaiveDate
-	rm -fr $_dir_entity/examples
-	rm -fr $_dir_entity/rust-server
-	rm -fr $_dir_entity/src/client
-	rm -fr $_dir_entity/src/server
-	rm $_dir_entity/src/context.rs
-	rm $_dir_entity/src/header.rs
+
+	# java -jar ../../../bin/resources/openapi-generator-cli.jar generate -i ./$entity_name.yaml -o $_dir_entity --package-name=beancloud_${bounded_context}_openapi_$entity_name -g rust-server --type-mappings=date=NaiveDate
+
+	# rm -fr $_dir_entity/examples
+	# rm -fr $_dir_entity/rust-server
+	# rm -fr $_dir_entity/src/client
+	# rm -fr $_dir_entity/src/server
+	# rm $_dir_entity/src/context.rs
+	# rm $_dir_entity/src/header.rs
+
 	cd $_dir_entity &&  cargo fmt --all
     cd ../../../
 }

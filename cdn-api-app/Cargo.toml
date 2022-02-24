@@ -1,2 +1,3 @@
 [workspace]
-members = ["aws-lambda", "domain", "controller"]
+members = ["cloudcdn", "aws-lambda", "domain", "controller"]
+#members = ["aws-lambda", "domain", "controller"]

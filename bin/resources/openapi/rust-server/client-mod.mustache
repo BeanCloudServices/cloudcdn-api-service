@@ -2,7 +2,6 @@
 use crate::{Api{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}},
      {{{operationId}}}Response{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
      };
-use chrono::NaiveDate;
 
 {{#hasCallbacks}}
 pub mod callbacks;

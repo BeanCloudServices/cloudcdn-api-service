@@ -21,7 +21,42 @@ homepage = "{{.}}
 {{/homePageUrl}}
 
 [features]
-default = ["conversion"]
+default = ["client", "server"]
+client = [
+{{#apiUsesMultipart}}
+    "mime_0_2",
+{{/apiUsesMultipart}}
+{{#apiUsesMultipartFormData}}
+    "multipart", "multipart/client", "swagger/multipart_form",
+{{/apiUsesMultipartFormData}}
+{{#apiUsesMultipartRelated}}
+    "hyper_0_10", "mime_multipart",
+{{/apiUsesMultipartRelated}}
+{{#usesUrlEncodedForm}}
+    "serde_urlencoded",
+{{/usesUrlEncodedForm}}
+{{#hasCallbacks}}
+    "serde_ignored", "regex", "percent-encoding", "lazy_static",
+{{/hasCallbacks}}
+{{! Anything added to the list below, should probably be added to the callbacks list below }}
+    "hyper", "hyper-openssl", "hyper-tls", "native-tls", "openssl", "url"
+]
+server = [
+{{#apiUsesMultipart}}
+    "mime_0_2",
+{{/apiUsesMultipart}}
+{{#apiUsesMultipartFormData}}
+    "multipart", "multipart/server",
+{{/apiUsesMultipartFormData}}
+{{#apiUsesMultipartRelated}}
+    "hyper_0_10", "mime_multipart",
+{{/apiUsesMultipartRelated}}
+{{#hasCallbacks}}
+    "native-tls", "hyper-openssl", "hyper-tls", "openssl",
+{{/hasCallbacks}}
+{{! Anything added to the list below, should probably be added to the callbacks list above }}
+   "serde_ignored", "hyper", "regex", "percent-encoding", "url", "lazy_static"
+]
 conversion = ["frunk", "frunk_derives", "frunk_core", "frunk-enum-core", "frunk-enum-derive"]
 
 [target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "ios"))'.dependencies]
@@ -33,6 +68,11 @@ hyper-openssl = { version = "0.8", optional = true }
 openssl = {version = "0.10", optional = true }
 
 [dependencies]
+# BeanCustom crates included for aws-lambda build
+lambda_http = "0.5.0"
+tokio = { version = "1", features = ["macros"] }
+jsonwebtoken = "7.2.0"
+
 # Common
 async-trait = "0.1.24"
 chrono = { version = "0.4", features = ["serde"] }
@@ -43,14 +83,6 @@ mime = "0.3"
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
-# Crates included for aws-lambda build
-lambda_http = "0.5.0"
-tokio = { version = "1", features = ["macros"] }
-#controller = { package = "controller", path = "../../student-app/controller" }
-#controller = { package = "mock-controller", path = "../../student-app/mock-controller" }
-#domain = {path = "../../student-app/domain"}
-jsonwebtoken = "7.2.0"
 
 # Crates included if required by the API definition
 {{#usesXml}}
@@ -104,3 +136,11 @@ tokio-tls = "0.3"
 [target.'cfg(not(any(target_os = "macos", target_os = "windows", target_os = "ios")))'.dev-dependencies]
 tokio-openssl = "0.4"
 openssl = "0.10"
+
+[[example]]
+name = "client"
+required-features = ["client"]
+
+[[example]]
+name = "server"
+required-features = ["server"]

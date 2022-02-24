@@ -5,7 +5,7 @@ use lambda_http::{http, Body, Context, IntoResponse, RequestExt, Response};
 pub async fn get_one_student_by_id(uuid: String) -> Option<StudentView> {
     let request = request_builder::build_http_request_to_get_one_student(uuid);
     // When
-    let response = aws_lambda::func(request, Context::default())
+    let response = aws_lambda::func(request)
         .await
         .expect("expected Ok(_) value")
         .into_response();
@@ -21,7 +21,7 @@ pub async fn get_one_student_by_id(uuid: String) -> Option<StudentView> {
 pub async fn get_student_collection() -> Option<StudentViewCollection> {
     let request = request_builder::build_http_request_to_get_student_collection(0.to_string(), 10);
     // When
-    let response = aws_lambda::func(request, Context::default())
+    let response = aws_lambda::func(request)
         .await
         .expect("expected Ok(_) value")
         .into_response();

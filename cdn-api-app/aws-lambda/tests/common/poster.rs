@@ -5,7 +5,7 @@ use lambda_http::{http, Body, Context, IntoResponse, RequestExt, Response};
 pub async fn post_student_upsert(student_upsert: StudentUpsert) -> Option<StudentView> {
     let request = request_builder::build_http_request_to_post_student_upsert(student_upsert);
     // When
-    let response = aws_lambda::func(request, Context::default())
+    let response = aws_lambda::func(request)
         .await
         .expect("expected Ok(_) value")
         .into_response();

@@ -15,5 +15,5 @@ Cargo.lock
 contracts
 *-openapi
 _contracts.tar.gz
-
+# **/cloudcdn/
 target

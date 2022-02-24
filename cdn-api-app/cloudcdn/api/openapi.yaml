@@ -1,0 +1,95 @@
+openapi: 3.0.1
+info:
+  description: CloudCdn API to create distributions.
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: OpenAPI distribution info
+  version: 0.0.1
+servers:
+- url: https://api.bcs.{env}.peterbean.net/cloudcdn/latest
+  variables:
+    env:
+      default: dev
+      enum:
+      - dev
+      - prod
+- description: default PROD env
+  url: https://api.bcs.peterbean.net/cloudcdn/latest
+tags:
+- description: Everything about your distributions
+  name: distribution
+paths:
+  /distributions:
+    post:
+      operationId: createDistribution
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DistributionUpsertRequest'
+        description: Update an existent distribution
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionUpsert'
+          description: successful operation
+        "400":
+          description: Invalid input
+      security:
+      - student_auth: []
+      summary: Create new distribution
+      tags:
+      - distributions
+  /students/{id}:
+    get:
+      operationId: getDistribution
+      parameters:
+      - description: ID of student to update
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistributionUpsert'
+          description: successful operation
+        "400":
+          description: Invalid input
+      security:
+      - student_auth: []
+      summary: Create new distribution
+      tags:
+      - distributions
+components:
+  schemas:
+    DistributionUpsertRequest:
+      example:
+        idempotencyKey: idempotencyKey
+      properties:
+        idempotencyKey:
+          type: string
+      required:
+      - idempotencyKey
+      type: object
+    DistributionUpsert:
+      allOf:
+      - $ref: '#/components/schemas/DistributionUpsertRequest'
+      - $ref: '#/components/schemas/DistributionUpsert_allOf'
+    DistributionUpsert_allOf:
+      properties:
+        id:
+          format: uuid
+          type: string
+      type: object
+

@@ -11,7 +11,7 @@ use lambda_http::http::header::{
     CONTENT_TYPE,
 };
 use lambda_http::http::{method, uri::Uri, HeaderValue};
-use lambda_http::{handler, Body, Context, IntoResponse, Request, RequestExt, Response};
+use lambda_http::{Body, Context, IntoResponse, Request, RequestExt, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::env;
@@ -19,12 +19,12 @@ use std::str::FromStr;
 
 fn from_query_param_to_string(request: &Request, param: &str) -> Option<String> {
     let query = request.query_string_parameters();
-    query.get(param).map(|str| str.parse().unwrap())
+    query.first(param).map(|str| str.parse().unwrap())
 }
 
 pub fn from_request_to_id(req: &Request) -> Option<uuid::Uuid> {
     let path_parameters = req.path_parameters();
-    let id_param = path_parameters.get("id");
+    let id_param = path_parameters.first("id");
     if let Some(id) = id_param {
         println!("id found");
         Some(uuid::Uuid::parse_str(id).unwrap())
@@ -36,7 +36,7 @@ pub fn from_request_to_id(req: &Request) -> Option<uuid::Uuid> {
 
 pub fn from_request_to_collection_query(req: &Request) -> StudentCollectionQuery {
     let query = req.query_string_parameters();
-    let param_date_of_birth = query.get("dateOfBirth");
+    let param_date_of_birth = query.first("dateOfBirth");
     let param_date_of_birth = match param_date_of_birth {
         Some(param_date_of_birth) => {
             let param_date_of_birth = <NaiveDate as FromStr>::from_str(param_date_of_birth);
@@ -52,7 +52,7 @@ pub fn from_request_to_collection_query(req: &Request) -> StudentCollectionQuery
     };
 
     let sort_criteria_dto: Vec<String> = query
-        .get_all("sorts")
+        .all("sorts")
         .unwrap_or_default()
         .iter()
         .map(|e| e.to_string())
@@ -79,7 +79,7 @@ pub fn from_request_to_collection_query(req: &Request) -> StudentCollectionQuery
         polity_name: from_query_param_to_string(req, "polityName"),
         //specialism: from_query_param_to_string(req, "specialism"),
         sorts: param_sorts,
-        offset: query.get("offset").map(|str| str.parse().unwrap()),
-        count: query.get("count").map(|str| str.parse().unwrap()),
+        offset: query.first("offset").map(|str| str.parse().unwrap()),
+        count: query.first("count").map(|str| str.parse().unwrap()),
     }
 }
